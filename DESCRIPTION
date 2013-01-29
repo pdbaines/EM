@@ -1,0 +1,10 @@
+Package: EM
+Type: Package
+Title: General Tools for EM Algorithms
+Version: 0.1
+Date: 2013-01-30
+Author: Paul D. Baines
+Maintainer: Paul D. Baines <pdbaines@ucdavis.edu>
+Description: Does EM stuff
+Depends: MASS, statmod, compiler
+License: GPL
