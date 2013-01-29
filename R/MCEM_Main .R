@@ -125,7 +125,10 @@
     }
 
     if (monitor){
-      monitor.t1 <- mcem.monitor.update(theta.t=theta.t,theta.t1=theta.t1,n.samples=n.monitor.samples,states=states)
+        # Perform MCEM convergence monitoring:
+        monitor.t1 <- mcem.monitor.update(theta.t=theta.t,theta.t1=theta.t1,n.samples=n.monitor.samples,states=states)
+        # Update state for future iterations:
+        states <- monitor.t1$states
     }
     
     # Store the paths?
@@ -303,8 +306,10 @@
     Z.tmp <- theta.t[i]^(0:1)    
     sigma.tmp.new <- solve(solve(sigma.tmp.old)+Z.tmp%*%t(Z.tmp)/ss.tmp.MC[i])
     mu.tmp.new <- sigma.tmp.new%*%(solve(sigma.tmp.old)%*%mu.tmp.old+theta.t1[i]*Z.tmp/ss.tmp.MC[i])
-    Sample.tmp <- mvrnorm(n.samples,mu.tmp.new,sigma.tmp.new)
-    
+    Sample.tmp <- try({rmvnorm(n=n.samples,mean=mu.tmp.new,sigma=sigma.tmp.new,method="chol")},silent=TRUE) # Cholesky for speed...
+    if (class(Sample.tmp)=="try-error"){
+        Sample.tmp <- rmvnorm(n=n.samples,mean=mu.tmp.new,sigma=sigma.tmp.new,method="svd") # Fall back...
+    }
     # Compute \tilde estimates:
     tmp.theta.tilde <- Sample.tmp[,1]/(1-Sample.tmp[,2])
     err[i] <- sd(tmp.theta.tilde)

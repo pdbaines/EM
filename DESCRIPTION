@@ -6,5 +6,5 @@ Date: 2013-01-30
 Author: Paul D. Baines
 Maintainer: Paul D. Baines <pdbaines@ucdavis.edu>
 Description: Does EM stuff
-Depends: MASS, statmod, compiler
+Depends: mvtnorm
 License: GPL
