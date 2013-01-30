@@ -4,7 +4,13 @@ rm(list=ls())
 
 library(EM)
 
-outdir <- "~/Dropbox/"
+on.gauss <- FALSE
+
+if (on.gauss){
+  outdir <- "/home/pdbaines/Research/Convergence/"
+} else {
+  outdir <- "~/Dropbox/"  
+}
 
 "EM.example.update" <- function(theta,y.obs,fixed,verbose)
 {
@@ -129,3 +135,6 @@ dev.off()
 
 plot(log(t3$paths$err),type="l",main="MCEM Estimate Error",ylab="log(err)",xlab="Iteration")
 plot(log(t3$paths$errq),type="l",main="MCEM Quantile Range",ylab="log(QR)",xlab="Iteration")
+
+# This will be large... :)
+save.image(paste(outdir,"full_run_mcem.RData",sep=""))
