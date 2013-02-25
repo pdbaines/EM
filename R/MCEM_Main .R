@@ -161,14 +161,18 @@
         if (is.function(logLike)){
           paths$logLike <- append(paths$logLike,ll.t1)
         }
-        # Need to compute these from the paths not just last state...
-        monitor.t1$theta.bar <- apply(paths$theta,2,mean)
-        monitor.t1$theta.bar.10 <- apply(paths$theta[max(1,iter+1-9:(iter+1),,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
-        monitor.t1$bar.sd <- ...
-        monitor.t1$bar.qr <- ...
-        monitor.t1$bar.10.sd <- ...
-        monitor.t1$bar.10.qr <- ...
         if (monitor){
+          # Need to compute these from the paths not just last state...
+          monitor.t1$theta.bar <- apply(paths$theta,2,mean)
+          iter.10 <- max(1,iter+1-9):(iter+1)
+          b.hat <- extract.b.hat(monitor.t1,iter=iter+1)
+          monitor.t1$theta.bar.10 <- apply(paths$theta[iter.10,,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
+          bar.unc    <- bar.uncertainty(sigma.mc.sq=monitor.t1$states$ss.MC,b.hat=b.hat,n=iter+1,cr=cr)
+          bar.10.unc <- bar.uncertainty(sigma.mc.sq=monitor.t1$states$ss.MC,b.hat=b.hat,n=length(iter.10),cr=cr)
+          monitor.t1$bar.sd <- bar.unc$bar.sd
+          monitor.t1$bar.qr <- bar.unc$bar.qr
+          monitor.t1$bar.10.sd <- bar.10.unc$bar.sd
+          monitor.t1$bar.10.qr <- bar.10.unc$bar.sd
           paths$theta.tilde <- append(paths$theta.tilde,monitor.t1$theta.tilde)
           paths$tilde.sd <- rbind(paths$tilde.sd,monitor.t1$tilde.sd)
           paths$tilde.qr <- rbind(paths$tilde.qr,monitor.t1$tilde.qr)          
@@ -185,14 +189,18 @@
         if (is.function(logLike)){
           paths$logLike[iter+1] <- ll.t1
         }
-        # Need to compute these from the paths not just last state...
-        monitor.t1$theta.bar <- apply(paths$theta,2,mean)
-        monitor.t1$theta.bar.10 <- apply(paths$theta[max(1,iter+1-9):(iter+1),,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
-        monitor.t1$bar.sd <- ...
-        monitor.t1$bar.qr <- ...
-        monitor.t1$bar.10.sd <- ...
-        monitor.t1$bar.10.qr <- ...
         if (monitor){
+          # Need to compute these from the paths not just last state...
+          monitor.t1$theta.bar <- apply(paths$theta,2,mean)
+          iter.10 <- max(1,iter+1-9):(iter+1)
+          b.hat <- extract.b.hat(monitor.t1,iter=iter+1)
+          monitor.t1$theta.bar.10 <- apply(paths$theta[iter.10,,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
+          bar.unc    <- bar.uncertainty(sigma.mc.sq=monitor.t1$states$ss.MC,b.hat=b.hat,n=iter+1,cr=cr)
+          bar.10.unc <- bar.uncertainty(sigma.mc.sq=monitor.t1$states$ss.MC,b.hat=b.hat,n=length(iter.10),cr=cr)
+          monitor.t1$bar.sd <- bar.unc$bar.sd
+          monitor.t1$bar.qr <- bar.unc$bar.qr
+          monitor.t1$bar.10.sd <- bar.10.unc$bar.sd
+          monitor.t1$bar.10.qr <- bar.10.unc$bar.sd
           paths$theta.tilde[iter+1,] <- monitor.t1$theta.tilde
           paths$tilde.sd[iter+1,] <- monitor.t1$tilde.sd
           paths$tilde.qr[iter+1,] <- monitor.t1$tilde.qr
@@ -379,5 +387,29 @@
   }
     
   return(list("theta.tilde"=theta.tilde,"tilde.sd"=tilde.sd,"tilde.qr"=tilde.qr,"states"=states))
+}
+
+"bar.uncertainty" <- function(sigma.mc.sq,b.hat,n,cr){
+  # For last-10 version, just call with n=10...
+  # Compute variance:
+  bar.var <- 0.0
+  for (j in 1:n){
+    bar.var <- bar.var + sum(b.hat^(abs(j-c(1:n))))
+  }
+  bar.var <- sigma.mc.sq*bar.var/((1-(b.hat^2))*(n^2))
+  # SD and normal-approximation QR:
+  bar.sd <- sqrt(bar.var)
+  bar.qr <- diff(qnorm(c(0.5*(1-cr),cr+0.5*(1-cr)),sd=bar.sd))
+  return(list("bar.sd"=bar.sd,"bar.qr"=bar.qr))
+}
+
+"extract.b.hat" <- function(monitor,iter)
+{
+  p <- monitor$states$p
+  bh <- rep(NA,p)
+  for (i in 1:p){
+    bh[i] <- monitor$states$mu.old[[iter]][2]
+  }
+  return(bh)
 }
 
