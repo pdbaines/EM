@@ -4,7 +4,7 @@ rm(list=ls())
 
 library(EM)
 
-on.gauss <- FALSE
+on.gauss <- TRUE # FALSE
 
 if (on.gauss){
   outdir <- "/home/pdbaines/Research/Convergence/"
@@ -47,9 +47,9 @@ verbose <- FALSE
 t1 <- EM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, max.iter=max.iter, verbose=verbose)
 t1
 
-set.seed(512040017)
+set.seed(5120417)
 
-max.iter <- 5000000 # 5 million
+max.iter <- 10000000 # 10 million
 print.every <- 100000
 zero.tol <- 0.0
 sigma.mc <- 0.01
@@ -99,7 +99,7 @@ sigma.start <- 1e5
 iter.to.wait <- 5
 cr <- 0.95
 n.monitor.samples <- 10000
-max.iter <- 1000000 # 1 million
+max.iter <- 10000000 # 10 million
 verbose <- FALSE # TRUE
 print.every <- 10000
 

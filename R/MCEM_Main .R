@@ -294,7 +294,8 @@
   theta.tilde <- theta.t
   theta.tilde[1:p] <- NA
   err <- errq <- rep(NA,p)
-  
+  cr <- states$cr ## ADDED 02/20/13
+
   for (i in 1:p){
     
     # Extract parameter-specific current states:
