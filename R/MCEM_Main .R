@@ -34,9 +34,24 @@
       # Keep paths via appending to current path:
       paths <- list("theta"=matrix(nrow=0,ncol=length.theta),"logLike"=NULL)
       if (monitor){
+        # Modified slope-based estimator:
         paths$theta.tilde <- matrix(nrow=0,ncol=length.theta)
-        paths$err <- matrix(nrow=0,ncol=length.theta)
-        paths$errq <- matrix(nrow=0,ncol=length.theta)
+        # Long-run estimator:
+        paths$theta.bar <- matrix(nrow=0,ncol=length.theta)
+        # Running mean (last-10) estimator:
+        paths$theta.bar.10 <- matrix(nrow=0,ncol=length.theta)
+        # SD(theta.tilde) 
+        paths$tilde.sd <- matrix(nrow=0,ncol=length.theta)
+        # QR(theta.tilde) 
+        paths$tilde.qr <- matrix(nrow=0,ncol=length.theta)
+        # SD(theta.bar) 
+        paths$bar.sd <- matrix(nrow=0,ncol=length.theta)
+        # QR(theta.bar) 
+        paths$bar.qr <- matrix(nrow=0,ncol=length.theta)
+        # SD(theta.bar.10) 
+        paths$bar.10.sd <- matrix(nrow=0,ncol=length.theta)
+        # QR(theta.bar.10) 
+        paths$bar.10.qr <- matrix(nrow=0,ncol=length.theta)
       }
     } else {
       # Keep paths by making massive matrix and deleting unwanted rows at end:
@@ -46,9 +61,15 @@
         paths$logLike <- rep(NA,max.iter)
       }
       if (monitor){
-        paths$theta.tilde <- matrix(nrow=max.iter,ncol=length.theta)
-        paths$err <- matrix(nrow=max.iter,ncol=length.theta)
-        paths$errq <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$theta.tilde  <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$theta.bar    <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$theta.bar.10 <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$tilde.sd  <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$tilde.qr  <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$bar.sd    <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$bar.qr    <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$bar.10.sd <- matrix(nrow=max.iter,ncol=length.theta)
+        paths$bar.10.qr <- matrix(nrow=max.iter,ncol=length.theta)
       }
     }
   } else {
@@ -140,10 +161,23 @@
         if (is.function(logLike)){
           paths$logLike <- append(paths$logLike,ll.t1)
         }
+        # Need to compute these from the paths not just last state...
+        monitor.t1$theta.bar <- apply(paths$theta,2,mean)
+        monitor.t1$theta.bar.10 <- apply(paths$theta[max(1,iter+1-9:(iter+1),,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
+        monitor.t1$bar.sd <- ...
+        monitor.t1$bar.qr <- ...
+        monitor.t1$bar.10.sd <- ...
+        monitor.t1$bar.10.qr <- ...
         if (monitor){
           paths$theta.tilde <- append(paths$theta.tilde,monitor.t1$theta.tilde)
-          paths$err <- rbind(paths$err,monitor.t1$err)
-          paths$errq <- rbind(paths$errq,monitor.t1$errq)          
+          paths$tilde.sd <- rbind(paths$tilde.sd,monitor.t1$tilde.sd)
+          paths$tilde.qr <- rbind(paths$tilde.qr,monitor.t1$tilde.qr)          
+          paths$theta.bar <- append(paths$theta.tilde,monitor.t1$theta.bar)
+          paths$theta.bar.10 <- append(paths$theta.tilde,monitor.t1$theta.bar.10)
+          paths$bar.sd <- rbind(paths$bar.sd,monitor.t1$bar.sd)
+          paths$bar.qr <- rbind(paths$bar.qr,monitor.t1$bar.qr)          
+          paths$bar.10.sd <- rbind(paths$bar.10.sd,monitor.t1$bar.10.sd)
+          paths$bar.10.qr <- rbind(paths$bar.10.qr,monitor.t1$bar.10.qr)          
         }
       } else {
         # Non-appending version:
@@ -151,10 +185,22 @@
         if (is.function(logLike)){
           paths$logLike[iter+1] <- ll.t1
         }
+        # Need to compute these from the paths not just last state...
+        monitor.t1$theta.bar <- apply(paths$theta,2,mean)
+        monitor.t1$theta.bar.10 <- apply(paths$theta[max(1,iter+1-9):(iter+1),,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
+        monitor.t1$bar.sd <- ...
+        monitor.t1$bar.qr <- ...
+        monitor.t1$bar.10.sd <- ...
+        monitor.t1$bar.10.qr <- ...
         if (monitor){
           paths$theta.tilde[iter+1,] <- monitor.t1$theta.tilde
-          paths$err[iter+1,] <- monitor.t1$err
-          paths$errq[iter+1,] <- monitor.t1$errq
+          paths$tilde.sd[iter+1,] <- monitor.t1$tilde.sd
+          paths$tilde.qr[iter+1,] <- monitor.t1$tilde.qr
+          paths$theta.bar[iter+1,] <- monitor.t1$theta.bar
+          paths$bar.sd[iter+1,] <- monitor.t1$bar.sd
+          paths$bar.qr[iter+1,] <- monitor.t1$bar.qr
+          paths$bar.10.sd[iter+1,] <- monitor.t1$bar.10.sd
+          paths$bar.10.qr[iter+1,] <- monitor.t1$bar.10.qr
         }        
       }
     }
@@ -205,9 +251,18 @@
       paths$logLike <- paths$logLike[1:iter]
     }
     if (monitor){
+      # Slope-based estimate:
       paths$theta.tilde <- paths$theta.tilde[1:iter,,drop=FALSE]
-      paths$err <- paths$err[1:iter,,drop=FALSE]
-      paths$errq <- paths$errq[1:iter,,drop=FALSE]
+      paths$tilde.sd <- paths$tilde.sd[1:iter,,drop=FALSE]
+      paths$tilde.qr <- paths$tilde.qr[1:iter,,drop=FALSE]
+      # Long-run mean estimate:
+      paths$theta.bar <- paths$theta.bar[1:iter,,drop=FALSE]
+      paths$bar.sd <- paths$bar.sd[1:iter,,drop=FALSE]
+      paths$bar.qr <- paths$bar.qr[1:iter,,drop=FALSE]
+      # Long-run mean estimate:
+      paths$theta.bar.10 <- paths$theta.bar.10[1:iter,,drop=FALSE]
+      paths$bar.10.sd <- paths$bar.10.sd[1:iter,,drop=FALSE]
+      paths$bar.10.qr <- paths$bar.10.qr[1:iter,,drop=FALSE]
     }
   }
 
@@ -293,7 +348,7 @@
   # New state (keep names):
   theta.tilde <- theta.t
   theta.tilde[1:p] <- NA
-  err <- errq <- rep(NA,p)
+  tilde.sd <- tilde.qr <- rep(NA,p)
   cr <- states$cr ## ADDED 02/20/13
 
   for (i in 1:p){
@@ -313,8 +368,8 @@
     }
     # Compute \tilde estimates:
     tmp.theta.tilde <- Sample.tmp[,1]/(1-Sample.tmp[,2])
-    err[i] <- sd(tmp.theta.tilde)
-    errq[i] <- diff(quantile(tmp.theta.tilde,probs=c(0.5*(1-cr),cr+0.5*(1-cr))))
+    tilde.sd[i] <- sd(tmp.theta.tilde)
+    tilde.qr[i] <- diff(quantile(tmp.theta.tilde,probs=c(0.5*(1-cr),cr+0.5*(1-cr))))
     theta.tilde[i] <- median(tmp.theta.tilde)
     
     # Update the current states for parameter i:
@@ -323,6 +378,6 @@
     
   }
     
-  return(list("theta.tilde"=theta.tilde,"err"=err,"errq"=errq,"states"=states))
+  return(list("theta.tilde"=theta.tilde,"tilde.sd"=tilde.sd,"tilde.qr"=tilde.qr,"states"=states))
 }
 
