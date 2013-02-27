@@ -49,8 +49,8 @@ t1
 
 set.seed(5120417)
 
-max.iter <- 10000000 # 10 million
-print.every <- 100000
+max.iter <- 10000 # 10 million
+print.every <- 1000
 zero.tol <- 0.0
 sigma.mc <- 0.01
 fixed <- list("sigma.mc"=sigma.mc)
