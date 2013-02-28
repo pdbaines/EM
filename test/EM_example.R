@@ -4,7 +4,7 @@ rm(list=ls())
 
 library(EM)
 
-on.gauss <- TRUE # FALSE
+on.gauss <- FALSE
 
 if (on.gauss){
   outdir <- "/home/pdbaines/Research/Convergence/"
@@ -36,16 +36,16 @@ if (on.gauss){
   return(psi)
 }
 
-
-
 y.obs <- list("y1"=125,"y2"=18,"y3"=20,"y4"=34,"n"=125+18+20+34)
 fixed <- list("sigma.mc"=0)
 theta.0 <- 0.5
 max.iter <- 1000
 verbose <- FALSE
 
+cat("Running vanilla-EM (no Monte Carlo Error)...\n")
 t1 <- EM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, max.iter=max.iter, verbose=verbose)
 t1
+cat("Done.\n")
 
 set.seed(5120417)
 
@@ -55,16 +55,18 @@ zero.tol <- 0.0
 sigma.mc <- 0.01
 fixed <- list("sigma.mc"=sigma.mc)
 # Never allow convergence:
+cat(paste("Running EM with MC-error (no tilde estimates) for ",max.iter," iterations...\n",sep=""))
 t2.time <- system.time({
   t2 <- EM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, max.iter=max.iter, print.every=print.every, tol=zero.tol, verbose=verbose)
 })
-
+cat("done. Timing:\n")
 print(t2.time)
 
 t2$theta
 mean(t2$paths$theta)
 t1$theta
 
+cat("Making plots...\n")
 rs <- cumsum(t2$paths$theta)/seq(along=t2$paths$theta) 
 if (max.iter>1000000){
   pdf(paste(outdir,"mcem_long_run.pdf",sep=""))
@@ -99,20 +101,24 @@ sigma.start <- 1e5
 iter.to.wait <- 5
 cr <- 0.95
 n.monitor.samples <- 10000
-max.iter <- 10000000 # 10 million
+max.iter <- 1000 # 10 million
 verbose <- FALSE # TRUE
-print.every <- 10000
+print.every <- 100
 
+cat(paste("Running MCEM with tilde estimates for ",max.iter," iterations...\n",sep=""))
 t3 <- MCEM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, 
            max.iter=max.iter, monitor=TRUE, ss.MC.reps=ss.MC.reps, 
            mu.start=mu.start, sigma.start=sigma.start,
            iter.to.wait=iter.to.wait, cr=cr,n.monitor.samples=n.monitor.samples,
            print.every=print.every, tol=zero.tol, verbose=verbose)
-
+cat("done.\n")
+          
 t3$paths$theta
 t3$paths$theta.tilde
-t3$paths$err
-t3$paths$errq
+t3$paths$tilde.sd
+t3$paths$tilde.qr
+
+cat("Making plots...\n")
 
 c("true.MLE"=t1$theta, # true MLE
   "Long.run.mean"=mean(t2$paths$theta), # long-run mean
@@ -133,8 +139,18 @@ legend("bottomright",legend=c("MLE","Long-run Average","tilde-estimate"),
        col=c("blue","red","orange"),lty=1)
 dev.off()
 
-plot(log(t3$paths$err),type="l",main="MCEM Estimate Error",ylab="log(err)",xlab="Iteration")
-plot(log(t3$paths$errq),type="l",main="MCEM Quantile Range",ylab="log(QR)",xlab="Iteration")
+plot(log(t3$paths$tilde.sd),type="l",main="MCEM Estimate SE",ylab="log(SD)",xlab="Iteration")
+lines(log(t3$paths$bar.sd),col="red")
+lines(log(t3$paths$bar.10.sd),col="blue")
+
+plot(log(t3$paths$tilde.qr),type="l",main="MCEM Quantile Range",ylab="log(QR)",xlab="Iteration")
+lines(log(t3$paths$bar.qr),col="red")
+lines(log(t3$paths$bar.10.qr),col="blue")
+
+cat("done. Saving image...\n")
 
 # This will be large... :)
 save.image(paste(outdir,"full_run_mcem.RData",sep=""))
+
+cat("done. :)\n")
+

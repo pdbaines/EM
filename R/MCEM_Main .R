@@ -408,7 +408,7 @@
   p <- monitor$states$p
   bh <- rep(NA,p)
   for (i in 1:p){
-    bh[i] <- monitor$states$mu.old[[iter]][2]
+    bh[i] <- monitor$states$mu.old[[i]][2]
   }
   return(bh)
 }
