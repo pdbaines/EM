@@ -57,7 +57,8 @@ fixed <- list("sigma.mc"=sigma.mc)
 # Never allow convergence:
 cat(paste("Running EM with MC-error (no tilde estimates) for ",max.iter," iterations...\n",sep=""))
 t2.time <- system.time({
-  t2 <- EM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, max.iter=max.iter, print.every=print.every, tol=zero.tol, verbose=verbose)
+  t2 <- EM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update,
+           max.iter=max.iter, print.every=print.every, tol=zero.tol, verbose=verbose)
 })
 cat("done. Timing:\n")
 print(t2.time)
@@ -73,7 +74,8 @@ if (max.iter>1000000){
 } else {
   pdf(paste(outdir,"mcem_short_run.pdf",sep=""))
 }
-plot(rs,type="l",ylim=t1$theta+c(-0.0001,0.0001),ylab="theta",main="Monte Carlo EM: Long-run Average",
+plot(rs,type="l",ylim=t1$theta+c(-0.0001,0.0001),ylab="theta",
+     main="Monte Carlo EM: Long-run Average",
      xlab="iteration",sub=paste("sigma.mc=",sigma.mc,sep=""))
 abline(h=mean(t2$paths$theta),col="red")
 abline(h=mean(t1$theta),col="blue")
@@ -82,7 +84,7 @@ dev.off()
 
 pdf(paste(outdir,"MCEM_example_mapping.pdf",sep=""))
 plot(x=t2$paths$theta[1:(t2$iterations-1)],
-     y=t2$paths$theta[2:t2$iterations],cex.pt=0.6,
+     y=t2$paths$theta[2:t2$iterations],
      xlab="theta^{(t)}",ylab="theta^{(t+1)}",
      main="MCEM Stochastic Update Mapping")
 dev.off()
@@ -104,11 +106,14 @@ n.monitor.samples <- 10000
 max.iter <- 1000 # 10 million
 verbose <- FALSE # TRUE
 print.every <- 100
+smooth <- TRUE
+B <- 100
 
 cat(paste("Running MCEM with tilde estimates for ",max.iter," iterations...\n",sep=""))
 t3 <- MCEM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, 
            max.iter=max.iter, monitor=TRUE, ss.MC.reps=ss.MC.reps, 
            mu.start=mu.start, sigma.start=sigma.start,
+           smooth=smooth,B=B,
            iter.to.wait=iter.to.wait, cr=cr,n.monitor.samples=n.monitor.samples,
            print.every=print.every, tol=zero.tol, verbose=verbose)
 cat("done.\n")
@@ -120,23 +125,33 @@ t3$paths$tilde.qr
 
 cat("Making plots...\n")
 
-c("true.MLE"=t1$theta, # true MLE
-  "Long.run.mean"=mean(t2$paths$theta), # long-run mean
-   "Our.estimate"=t3$paths$theta.tilde[length(t3$paths$theta.tilde)]) # our estimate
+t3$theta.tilde <- t3$paths$theta.tilde[length(t3$paths$theta.tilde)]
+t3$theta.bar <- t3$paths$theta.bar[length(t3$paths$theta.bar)]
+t3$theta.bar.10 <- t3$paths$theta.bar.10[length(t3$paths$theta.bar.10)]
+t3$theta.spline <- t3$paths$theta.spline[length(t3$paths$theta.spline)]
+
+ests <- c("MLE"=t1$theta, # true MLE
+         "theta.tilde"=t3$theta.tilde ,
+         "theta.bar"=t3$theta.bar,
+         #"theta.bar.10"=t3$theta.bar.10,
+         "theta.spline"=t3$theta.spline)
+
+print(ests)
 
 matplot(cbind(t3$paths$theta,t3$paths$theta.tilde),type="l")
 
+colvec <- rainbow(length(ests))
 pdf(paste(outdir,"mcem_comparison.pdf",sep=""))
-rs2 <- cbind(rs[1:t3$iterations],t3$paths$theta.tilde)
+rs2 <- cbind(t3$paths$theta.bar,
+             t3$paths$theta.tilde,
+             #t3$paths$theta.bar.10,
+             t3$paths$theta.spline)
 matplot(rs2,type="l",ylab="theta",main="Monte Carlo EM: Comparison",
-        ylim=t1$theta+c(-0.0003,0.0003),
+        ylim=range(rs2[floor(nrow(rs2)/4):nrow(rs2),],na.rm=TRUE),
         xlab="iteration",sub=paste("sigma.mc=",sigma.mc,sep=""),
-        col=c("red","orange"),lty=1)
-abline(h=mean(t2$paths$theta[1:t3$iterations]),col="red")
-abline(h=mean(t1$theta),col="blue")
-abline(h=t3$paths$theta.tilde[length(t3$paths$theta.tilde)],col="orange")
-legend("bottomright",legend=c("MLE","Long-run Average","tilde-estimate"),
-       col=c("blue","red","orange"),lty=1)
+        col=colvec[2:length(colvec)],lty=1)
+abline(h=ests,col=colvec)
+legend("bottomright",legend=names(ests),col=colvec,lty=1)
 dev.off()
 
 plot(log(t3$paths$tilde.sd),type="l",main="MCEM Estimate SE",ylab="log(SD)",xlab="Iteration")

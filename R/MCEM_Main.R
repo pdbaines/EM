@@ -214,7 +214,10 @@
         if (monitor){
           # Need to compute these from the paths not just last state...
           monitor.t1$theta.bar <- apply(paths$theta[1:(iter+1),,drop=FALSE],2,mean)
-          print(paths$theta)
+          if (verbose){
+              cat("theta path:\n")
+              print(paths$theta[1:(iter+1),])
+          }
           iter.10 <- max(1,iter+1-9):(iter+1)
           b.hat <- extract.b.hat(monitor.t1,iter=iter+1)
           monitor.t1$theta.bar.10 <- apply(paths$theta[iter.10,,drop=FALSE],2,mean) # Note: Need theta.t1 to be appended first!
@@ -488,6 +491,7 @@
   
   thetanew <- rep(0,B)
   nsize = length(x)
+  i <- 0
   while(i<=B){
     resample <- sort(sample(nsize,nsize,TRUE))
     xnew <- x[resample]
