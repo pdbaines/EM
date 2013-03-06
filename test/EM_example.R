@@ -153,12 +153,17 @@ ss <- vector("list",B)
 sols <- vector("list",B)
 theta.s.vec <- rep(NA,B)
 data.spline <- smooth.spline(x=x,y=y,penalty=penalty)
+print.progress <- FALSE
 while (i<=B){
-  cat("Resampling data...\n")
+  if (print.progress){
+    cat("Resampling data...\n")
+  }
   resample <- sample(nsize,nsize,TRUE)
   xnew <- x[resample]
   ynew <- y[resample]
-  cat("Fitting spline...\n")
+  if (print.progress){
+    cat("Fitting spline...\n")
+  }
   ss[[i+1]] <- try(smooth.spline(x=xnew,y=ynew,penalty=penalty),TRUE)
   if (inherits(ss[[i+1]],"try-error")){
     cat("Error in spline fit!\n")
