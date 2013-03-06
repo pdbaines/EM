@@ -6,6 +6,7 @@
 "MCEM" <- function(y.obs,theta.0,fixed,update,max.iter,monitor=TRUE,ss.MC.reps=10,
                    mu.start=0.0,sigma.start=1e5,iter.to.wait=5,cr=0.95,
                    n.monitor.samples=10000,smooth=FALSE,penalty=2,B=100,iter.to.wait.sp=50,
+                   spline.se.every=100,
                    logLike=NULL,keep.paths=TRUE,append.paths=FALSE,tol=1e-10,
                    tol.type="relative",print.every=Inf,compute.DM=FALSE,verbose=FALSE)
 {
@@ -199,7 +200,7 @@
         }
         if (smooth){
           if (iter>=iter.to.wait.sp){
-            spline.t1 <- mcem.spline.update(paths$theta,iter,penalty,cr,B)
+            spline.t1 <- mcem.spline.update(paths$theta,iter,penalty,cr,B,spline.se.every)
             paths$theta.spline <- append(paths$theta.spline,spline.t1$theta.spline)
             paths$spline.sd <- rbind(paths$spline.sd,spline.t1$spline.sd)
             paths$spline.qr <- rbind(paths$spline.qr,spline.t1$spline.qr)
@@ -239,7 +240,7 @@
         }
         if (smooth){
           if (iter>=iter.to.wait.sp){
-            spline.t1 <- mcem.spline.update(paths$theta,iter,penalty,cr,B)
+            spline.t1 <- mcem.spline.update(paths$theta,iter,penalty,cr,B,spline.se.every)
             paths$theta.spline[iter+1,] <- spline.t1$theta.spline
             paths$spline.sd[iter+1,] <- spline.t1$spline.sd
             paths$spline.qr[iter+1,] <- spline.t1$spline.qr
@@ -460,7 +461,7 @@
 }
 
 
-"mcem.spline.update" <- function(paths.theta,iter,penalty,cr,B){
+"mcem.spline.update" <- function(paths.theta,iter,penalty,cr,B,spline.se.every){
   # function to use spline to fit the paths.theta
   p <- ncol(paths.theta)
   theta.spline <- rep(NA,p)
@@ -472,9 +473,11 @@
     ss <- smooth.spline(x=x,y=y,penalty=penalty)
     sol <- uniroot(f=G.root,interval=range(x),ss=ss)
     theta.spline[k] <- sol$root
-    bout <-bootstrap(x,y,penalty,cr,B)
-    spline.sd[k] <- bout$spline.sd
-    spline.qr[k] <- bout$spline.qr
+    if (iter%%spline.se.every == 0){
+      bout <-bootstrap(x,y,penalty,cr,B)
+      spline.sd[k] <- bout$spline.sd
+      spline.qr[k] <- bout$spline.qr
+    }
   }
   return(list("theta.spline"=theta.spline,"spline.sd"=spline.sd,"spline.qr"=spline.qr))
 }
@@ -485,7 +488,7 @@
 }
 
 
-"bootstrap" <- function(x,y,penalty,cr,B){
+"bootstrap" <- function(x,y,penalty,cr,B,print.every=10){
   # function to bootstrap to calculate the standard error and quantile range
   # B is the number of boostrap samples
   
@@ -493,15 +496,18 @@
   nsize = length(x)
   i <- 0
   while(i<=B){
-    resample <- sort(sample(nsize,nsize,TRUE))
+    resample <- sample(nsize,nsize,TRUE)
     xnew <- x[resample]
     ynew <- y[resample]
     ssnew <- try(smooth.spline(x=xnew,y=ynew,penalty=penalty),TRUE)
-    if(inherits(ssnew,"try-error")) next
+    if (inherits(ssnew,"try-error")) next
     solnew <- try(uniroot(f=G.root,interval=range(xnew),ss=ssnew),TRUE)
-    if(inherits(solnew,"try-error")) next
+    if (inherits(solnew,"try-error")) next
     thetanew[i] <- solnew$root
     i <- i+1
+    if (i%%print.every == 0){
+      cat(paste("Finished bootsrap sample ",i,"/",B,"...\n",sep=""))
+    }
   }
   spline.sd <- sd(thetanew)
   spline.qr <- diff(quantile(thetanew,probs=c(0.5*(1-cr),cr+0.5*(1-cr))))
