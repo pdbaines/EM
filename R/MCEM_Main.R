@@ -1,4 +1,3 @@
-
 #####################################
 ## Generic Monte Carlo EM function ##
 #####################################
@@ -13,7 +12,7 @@
   
   # Notes:
   # -- theta.0 (i.e., theta) can be a list
-  # -- update should be a function, taking two arguments only: theta and y.obs
+  # -- update should be a function, taking four arguments only: theta, y.obs, fixed and verbose
   # -- logLike should be a function taking two arguments only: theta and y.obs
   # -- smooth=TRUE means applying a smooth function to approximate G()
   # -- theta.bar and theta.bar.10 only appears when monitor=TRUE, not when smooth=TRUE
@@ -32,6 +31,11 @@
   theta.t <- theta.0
   length.theta <- length(theta.t)
   
+  ########
+  # HACK -- Recode this when we decide exactly which summaries to keep for
+  # monitoring MCEM convergence. 
+  ########
+
   if (keep.paths){
     if (append.paths){
       # Keep paths via appending to current path:
@@ -64,7 +68,7 @@
         # QR(theta.spline)
         paths$spline.qr <- matrix(nrow=0,ncol=length.theta)
       }
-    }else {
+    } else {
       # Keep paths by making massive matrix and deleting unwanted rows at end:
       paths <- list("theta"=matrix(NA,nrow=max.iter,ncol=length.theta),"logLike"=NULL)
       rownames(paths$theta) <- ppaste("iter_",1:max.iter)
