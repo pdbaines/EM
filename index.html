@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>EM by pdbaines</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>EM</h1>
+        <h2>General tools for the EM Algorithm</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/pdbaines/EM/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/pdbaines/EM/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/pdbaines/EM" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>EM: An R Package</h1>
+
+<p>Author: Paul D. Baines
+Original Date: 01/16/2011
+Version Date: 01/30/2013</p>
+
+<p>General tools for the EM Algorithm, including MCEM convergence monitoring.</p>
+
+<p>To install:</p>
+
+<p>R CMD INSTALL EM</p>
+
+<p>To use:</p>
+
+<p>(1) Write an EM-update function of the form:</p>
+
+<p>my.em.update.func &lt;- function(theta.t,y.obs,fixed,verbose){
+    # Do cool stuff...
+    theta.t1 &lt;- ... # Find update
+    return(theta.t1)
+  }</p>
+
+<p>(2) Use the "EM" function to perform the EM algorithm with your update function,
+    this includes all built-in convergence monitoring, options to save sample
+    paths, store log-likehood paths (if the log-likelihood function is supplied), 
+    and other useful stuff.</p>
+
+<p>(2') Use the "MCEM" function if your EM algorithm is a Monte Carlo EM algorithm.
+     The MCEM function includes improved parameter estimation and convergence
+     monitoring tools specifically tailored to MCEM algorithms.</p>
+
+<p>Enjoy! :)</p>
+
+<h1></h1>
+
+<p>For Cong:</p>
+
+<h1>Git basics:</h1>
+
+<p>Local files ===&gt; (git add) ===&gt; Index (git commit) ===&gt; Local repository ===&gt; (git push) ===&gt; Remote repository</p>
+
+<p>Git setup:</p>
+
+<p>git config --global user.name "Paul Baines"
+git config --global user.email "<a href="mailto:pdbaines@ucdavis.edu">pdbaines@ucdavis.edu</a>"</p>
+
+<p>Got to new directory:</p>
+
+<p>git init
+git add . 
+git commit -m "First comment for project"</p>
+
+<p>Note that the git add includes all subdirectories.</p>
+
+<p>To push to Github, use Windows or Mac client, and select "Push to Github".</p>
+
+<p>Or, </p>
+
+<p>git remote add origin <a href="https://github.com/pdbaines/LogNlogS.git">https://github.com/pdbaines/LogNlogS.git</a>
+git push -u origin master</p>
+
+<p>Do local editing, then to commit changes and send to remote repo:</p>
+
+<p>git commit -m "Update after changes
+git push</p>
+
+<p>or: git push origin
+or: git push origin master</p>
+
+<p>git push </p>
+
+<p>To update local files to those on Github:</p>
+
+<p>git pull</p>
+
+<p>git pull <a href="https://github.com/pdbaines/LogNLogS.git">https://github.com/pdbaines/LogNLogS.git</a>
+git pull origin master</p>
+
+<p>git fetch <a href="https://github.com/pdbaines/LogNLogS.git">https://github.com/pdbaines/LogNLogS.git</a>
+git diff</p>
+
+<p>git fetch origin</p>
+
+<p>Check status:</p>
+
+<p>git status</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
