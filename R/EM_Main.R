@@ -1,4 +1,3 @@
-
 #########################
 ## Generic EM function ##
 #########################
@@ -8,7 +7,7 @@
 
   # Notes:
   # -- theta.0 (i.e., theta) can be a list
-  # -- update should be a function, taking two arguments only: theta and y.obs
+  # -- update should be a function, taking fourarguments: theta, y.obs, fixed, verbose
   # -- logLike should be a function taking two arguments only: theta and y.obs
 
 
@@ -26,6 +25,13 @@
   theta.t <- theta.0
   length.theta <- length(theta.t)
 
+
+  # If the user wants to keep full paths, then two versions for storing paths
+  # appending-- very slow but light on memory
+  # pre-allocation -- fast but can use unecessary
+  # TODO: implement smaller-block pre-alllocation + appending to adapt to size
+  # without either extreme.
+
   if (keep.paths){
     if (append.paths){
       # Keep paths via appending to current path:
@@ -42,6 +48,7 @@
     paths <- NULL
   }
 
+  # If available, compute log-likelihood of initial state:
   if (is.function(logLike)){
     ll.t <- logLike(theta.t,y.obs)
   }
