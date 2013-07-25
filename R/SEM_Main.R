@@ -1,6 +1,7 @@
 
 ## SEM Code
 
+#' @export
 "DM.estimate" <- function(theta.mle,theta.t,y.obs,update,fixed,verbose=FALSE)
 {
 	# NOTE: We assume that "update" is a function formatted in the 

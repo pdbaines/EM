@@ -3,6 +3,7 @@
 ## FUNCTIONS FOR EIGENVALUE DEBUGGING ##
 ########################################
 
+#' @export
 "eigen.vals" <- function(x)
 {
   ret <- try({eigen(x)$values},silent=TRUE)
@@ -15,11 +16,13 @@
   return(ret)
 }
 
+#' @export
 "clean.DM" <- function(x)
 {
   return(x$DM.path[sapply(x$DM.path,function(y){class(y)!="try-error"})])
 }
 
+#' @export
 "eigen.plots" <- function(obj.list,alg.obj.names,DM.plots=TRUE,map.plots=TRUE,dm.mfrow=c(1,1),map.mfrow=c(1,1),print.every=Inf)
 {
   ####

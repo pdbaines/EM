@@ -2,6 +2,7 @@
 ## Generic Monte Carlo EM function ##
 #####################################
 
+#' @export
 "MCEM" <- function(y.obs,theta.0,fixed,update,max.iter,monitor=TRUE,ss.MC.reps=10,
                    mu.start=0.0,sigma.start=1e5,iter.to.wait=5,cr=0.95,
                    n.monitor.samples=10000,smooth=FALSE,penalty=2,B=100,iter.to.wait.sp=50,

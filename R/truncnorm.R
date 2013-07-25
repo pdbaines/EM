@@ -4,6 +4,7 @@
 ## (Note: R has library(msm) containing equivalent functions...)
 ##
 
+#' @export
 "dtnorm" <- function(x,lower=-Inf,upper=Inf,mean=0,sd=1,log=FALSE)
 {
   num <- dnorm(x=x,mean=mean,sd=sd,log=log)
@@ -18,11 +19,13 @@
   return(ret)
 }
 
+#' @export
 "rtnorm" <- function(n,lower=-Inf,upper=Inf,mean=0,sd=1)
 {
   return(qnorm(runif(n=n,min=pnorm(lower),max=pnorm(upper))))
 }
 
+#' @export
 "ptnorm" <- function(q,lower=-Inf,upper=Inf,mean=0,sd=1,lower.tail=TRUE,log.p=FALSE)
 {
   # Note this may not be numerically stable for very small/large percentiles...
@@ -37,6 +40,7 @@
   return(ret)
 }
 
+#' @export
 "qtnorm" <- function(p,lower=-Inf,upper=Inf,mean=0,sd=1,lower.tail=TRUE,log.p=FALSE)
 {
   upp <- pnorm(q=upper,mean=mean,sd)

@@ -1,29 +1,11 @@
 
+#' @export
 "ppaste" <- function(...)
 {
   paste(...,sep="")
 }
 
-
-"ldiff" <- function(x,y){
-  if (length(x) != length(y)){
-    stop("'x' and 'y' must have the same length")
-  }
-  if (is.list(x)){
-    ret <- vector("list",length(x))
-    names(ret) <- names(x)
-    if (any(names(x)!= names(y))){
-      warning("'x' and 'y' have different names")
-    }
-    for (i in 1:length(x)){
-      ret[[i]] <- ldiff(x[[i]],y[[i]])
-    }
-  } else {
-      ret <- (x-y)
-  }
-  return(ret)
-}
-      
+#' @export
 "ldiff" <- function(x,y){
   if (length(x) != length(y)){
     stop("'x' and 'y' must have the same length")
@@ -43,6 +25,7 @@
   return(ret)
 }
 
+#' @export
 "converged" <- function(theta.t1,theta.t,tol=1e-10,type="absolute")
 {
   if (type=="relative"){
@@ -64,6 +47,7 @@
   }
 }
 
+#' @export
 "NewtonRaphson" <- function(func,deriv.func,init,tol=1e-10,maxit=1000,simplify=TRUE,...)
 {
   # Function to find x s.t. func(x)=0, where deriv.func(x)=dfunc(x)/dx

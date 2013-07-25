@@ -1,3 +1,5 @@
+
+#' @export
 "spd.chol" <- function(X,lower=FALSE)
 {
   C <- chol(X)
@@ -7,6 +9,7 @@
   return(C)
 }
 
+#' @export
 "svd.root" <- function(X,tol=1e-50,right=FALSE) # Works on Matrix objects too
 {
   s <- svd(X)
@@ -19,6 +22,7 @@
   return(ret)
 }
 
+#' @export
 "svd.inverse.root" <- function(X,tol=1e-50) # Works on Matrix objects too
 {
   s <- svd(X)
@@ -43,11 +47,13 @@
     return(y)
 }
 
+#' @export
 "diag_ind" <- function(n) {
     1L + 0L:(n-1L)*(n+1L)
 }
 
 ## MAKE GENERIC...
+#' @export
 "elt.locs" <- function(X){
   # Function such that:
   # X@x == X[elt.locs(X)]
@@ -77,6 +83,7 @@
     stop("Invalid class '",class(X),"' in 'elt.locs'")
 }
 
+#' @export
 "ix2im" <- function(ix,nr,nc)
 {
   ## Index vector to index matrix
@@ -89,6 +96,7 @@
 }
 
 ## MAKE GENERIC...
+#' @export
 "matrix.flatten" <- function(X,diagonal=FALSE,triangular=FALSE,lower=TRUE,sparse=FALSE,diag=TRUE)
 {
   ## Function to flatten a matrix into a vector.
@@ -135,6 +143,7 @@
   }
 }
 
+#' @export
 "tri.extract" <- function(X,lower=TRUE,diag=TRUE)
 {
   if (lower){
@@ -144,6 +153,7 @@
   }
 }
 
+#' @export
 "matrix.expand" <- function(X,p,q,triangular=FALSE,lower=TRUE,diag=TRUE)
 {
   if (!triangular){
@@ -157,6 +167,7 @@
   }
 }
 
+#' @export
 "tri.construct" <- function(x,lower=TRUE,diag=TRUE)
 {
   # Check the size of the implied triangular matrix:
@@ -179,6 +190,7 @@
   return(X)
 }
 
+#' @export
 "is.square" <- function(X){
   if (nrow(X)==ncol(X)){
     return(TRUE)
@@ -187,6 +199,7 @@
   }
 }
 
+#' @export
 "is.symmetric" <- function(X,tol=.Machine$double.eps){
   if (sum(abs(X-t(X)))<tol){
     return(TRUE)
@@ -195,6 +208,7 @@
   }
 }
 
+#' @export
 "is.spd" <- function(X,tol=.Machine$double.eps){
   if (!is.square(X)){
     warning("Non symmetric p.d. matrix: (non-square)")
@@ -212,6 +226,7 @@
   return(TRUE)
 }
 
+#' @export
 "is.pd" <- function(X,tol=0.0)
 {
   # Require for eigenvalues to be >tol, 
@@ -219,6 +234,7 @@
   return(ifelse(all(eigen(X)$values>tol),TRUE,FALSE))
 }
 
+#' @export
 "mirror.matrix" <- function(X,lowertoupper=TRUE,diag=FALSE)
 {
   n <- nrow(X)
@@ -247,6 +263,7 @@
   return(X)
 }
 
+#' @export
 "make.positive.definite" <- 
 function (m, tol, check.method = "chol") 
 {

@@ -6,5 +6,15 @@ Date: 2013-01-30
 Author: Paul D. Baines
 Maintainer: Paul D. Baines <pdbaines@ucdavis.edu>
 Description: Does EM stuff
-Depends: mvtnorm
+Depends:
+    mvtnorm
 License: GPL
+Collate:
+    'eigen_dbg.R'
+    'EM_Main.R'
+    'matrix.R'
+    'MCEM_Main.R'
+    'misc.R'
+    'SEM_Main.R'
+    'truncnorm.R'
+    'zzz.R'
