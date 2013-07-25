@@ -1,4 +1,3 @@
-My first edit... :)
 
 EM: An R Package
 ================
@@ -28,62 +27,9 @@ To use:
     paths, store log-likehood paths (if the log-likelihood function is supplied), 
     and other useful stuff.
 
-(2') Use the "MCEM" function if your EM algorithm is a Monte Carlo EM algorithm.
+(2-alt) Use the "MCEM" function if your EM algorithm is a Monte Carlo EM algorithm.
      The MCEM function includes improved parameter estimation and convergence
      monitoring tools specifically tailored to MCEM algorithms.
 
 Enjoy! :)
-
-Git basics:
-
-Local files ===> (git add) ===> Index (git commit) ===> Local repository ===> (git push) ===> Remote repository
-
-
-Git setup:
-
-git config --global user.name "Paul Baines"
-git config --global user.email "pdbaines@ucdavis.edu"
-
-Got to new directory:
-
-git init
-git add . 
-git commit -m "First comment for project"
-
-Note that the git add includes all subdirectories.
-
-To push to Github, use Windows or Mac client, and select "Push to Github".
-
-Or, 
-
-git remote add origin https://github.com/pdbaines/LogNlogS.git
-git push -u origin master
-
-Do local editing, then to commit changes and send to remote repo:
-
-git commit -m "Update after changes
-git push
-
-or: git push origin
-or: git push origin master
-
-git push 
-
-To update local files to those on Github:
-
-git pull
-
-git pull https://github.com/pdbaines/LogNLogS.git
-git pull origin master
-
-git fetch https://github.com/pdbaines/LogNLogS.git
-git diff
-
-git fetch origin
-
-Check status:
-
-git status
-
-
 
