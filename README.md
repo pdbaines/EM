@@ -8,6 +8,8 @@ Version Date: 01/30/2013
 
 General tools for the EM Algorithm, including MCEM convergence monitoring.
 
+Also see: http://pdbaines.github.io/EM/
+
 To install:
 
 R CMD INSTALL EM
