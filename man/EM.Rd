@@ -93,7 +93,7 @@
  }
 
  E.vals <- estep(psi_current=theta, y1=y1)
- psi <- rnorm(n=1,mean=mstep(y12=E.vals$y12, y11=E.vals$y11, y4, n),sd=sigma.mc)
+ psi <- mstep(y12=E.vals$y12, y11=E.vals$y11, y4, n)
 
  return(psi)
 }
@@ -105,5 +105,8 @@ max.iter <- 1000
 verbose <- FALSE
 t1 <- EM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update, max.iter=max.iter, verbose=verbose)
 t1
+}
+\seealso{
+  \code{\link{MCEM}}
 }
 

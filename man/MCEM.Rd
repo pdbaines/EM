@@ -1,6 +1,6 @@
 \name{MCEM}
 \alias{MCEM}
-\title{Function for executing an instance of the MCEM algorithm}
+\title{Function for executing an instance of the Monte Carlo EM algorithm}
 \usage{
   MCEM(y.obs, theta.0, fixed, update, max.iter,
     monitor = TRUE, ss.MC.reps = 10, mu.start = 0,
@@ -125,5 +125,54 @@
 }
 \details{
   Lots of stuff
+}
+\examples{
+"MCEM.example.update" <- function(theta,y.obs,fixed,verbose)
+{
+ y1 <- y.obs$y1
+ y4 <- y.obs$y4
+ n <- y.obs$n
+ sigma.mc <- fixed$sigma.mc
+
+ "mstep" <- function(y12, y11, y4, n)
+ {
+   return((y12+y4)/(n-y11))
+ }
+ "estep" <- function(psi_current, y1)
+ {
+   y11 <- (y1/2)/((1/2) + (psi_current/4))
+   y12 <- y1 - y11
+   return(list("y11"=y11,"y12"=y12))
+ }
+
+ E.vals <- estep(psi_current=theta, y1=y1)
+ psi <- rnorm(n=1,mean=mstep(y12=E.vals$y12, y11=E.vals$y11, y4, n),sd=sigma.mc)
+
+ return(psi)
+}
+ss.MC.reps <- 10
+mu.start <- 0
+sigma.start <- 1e5
+iter.to.wait <- 5
+cr <- 0.95
+n.monitor.samples <- 10000
+max.iter <- 2000 # 10 million
+verbose <- FALSE # TRUE
+print.every <- 100
+smooth <- TRUE
+penalty <- 1.0
+B <- 100
+spline.se.every <- 10000000000 # 100
+
+t3 <- MCEM(y.obs=y.obs, fixed=fixed, theta.0=theta.0, update=EM.example.update,
+           max.iter=max.iter, monitor=TRUE, ss.MC.reps=ss.MC.reps,
+           mu.start=mu.start, sigma.start=sigma.start,
+           smooth=smooth,B=B,penalty=penalty,spline.se.every=spline.se.every,
+           iter.to.wait=iter.to.wait, cr=cr,n.monitor.samples=n.monitor.samples,
+           print.every=print.every, tol=zero.tol, verbose=verbose)
+print(t3)
+}
+\seealso{
+  \code{\link{EM}}
 }
 

@@ -38,6 +38,7 @@
 #' @param verbose integer controling the level of verbosity of the function     
 #' @details Lots of stuff
 #' @return Lots of stuff
+#' @seealso \code{\link{MCEM}}
 #' @examples
 #' # From (ref)
 #' "EM.example.update" <- function(theta,y.obs,fixed,verbose)
@@ -59,7 +60,7 @@
 #'  }
 #' 
 #'  E.vals <- estep(psi_current=theta, y1=y1)
-#'  psi <- rnorm(n=1,mean=mstep(y12=E.vals$y12, y11=E.vals$y11, y4, n),sd=sigma.mc)
+#'  psi <- mstep(y12=E.vals$y12, y11=E.vals$y11, y4, n)
 #' 
 #'  return(psi)
 #' }
