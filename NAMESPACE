@@ -28,3 +28,5 @@ export(svd.inverse.root)
 export(svd.root)
 export(tri.construct)
 export(tri.extract)
+export(updateplot)
+

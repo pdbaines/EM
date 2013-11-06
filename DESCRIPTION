@@ -15,6 +15,7 @@ Collate:
     'matrix.R'
     'MCEM_Main.R'
     'misc.R'
+    'plot.R'
     'SEM_Main.R'
     'truncnorm.R'
     'zzz.R'

@@ -60,10 +60,7 @@ plot(log(abs(diff(t1$paths$theta))),ylab="log(|theta^{(t+1)}-theta^{(t)}|)",xlab
 main="EM Algorithm Path: Log-Increments")
 
 # Linear convergence:
-plot(y=t1$paths$theta[2:t1$iter],x=t1$paths$theta[1:(t1$iter-1)],
-xlab="theta^{(t)}",ylab="theta^{(t+1)}",main="EM Updates: theta^{(t+1)} vs. theta^{(t)}")
-abline(coef(lm(t1$paths$theta[2:t1$iter]~t1$paths$theta[1:(t1$iter-1)])),col="red",lwd=1.5)
-
+updateplot(t1,main="EM Updates: theta^{(t+1)} vs. theta^{(t)}",addline=TRUE)
 
 cat("done. :)\n")
 
